@@ -15,7 +15,7 @@ jobs:
         with:
           input_dir: /
           output_dir: pdfs
-          extend_default_theme: styles/markdown.css
+          theme: styles/custom.css
           build_html: false
       - name: Create Release
         id: create_release
