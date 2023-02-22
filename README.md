@@ -6,7 +6,7 @@ I'm a software engineer with 5 years of experience with modern Python backend de
 
 Prior to my software engineering career, I worked as a support engineer at GroupM and Luxoft. Check out my full experience in my [LinkedIn profile](https://www.linkedin.com/in/kgustyr).
 
-Current location: Viana do Castelo, Portugal 🇵🇹
+Current location: Viana do Castelo, Portugal :portugal:
 
 ## 2017
 
