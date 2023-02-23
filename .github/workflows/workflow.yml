@@ -1,9 +1,6 @@
 name: main
 
-on:
-  push:
-    tags:
-      - v*
+on: [push, pull_request]
 
 jobs:
   publish-pdf:
@@ -11,13 +8,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: baileyjm02/markdown-to-pdf@v1.2.0
+      - uses: khvn26/markdown-to-pdf@v1.3.0
         with:
           input_dir: /
           output_dir: pdfs
           theme: styles/custom.css
           build_html: false
-      - name: Create Release
+      - uses: actions/upload-artifact@v3
+        with:
+          name: pdfs
+          path: pdfs/*
+      - if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -27,7 +29,8 @@ jobs:
           release_name: Release ${{ github.ref }}
           draft: false
           prerelease: false
-      - name: Upload Release Asset
+      - if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        name: Upload release CV.pdf
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
