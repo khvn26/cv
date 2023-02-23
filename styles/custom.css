@@ -103,6 +103,8 @@ img {
     max-width: 100%;
     box-sizing: content-box;
     background-color: #ffffff;
+    margin-left: 0;
+    margin-bottom: 1em;
 }
 
 code,
