@@ -10,6 +10,8 @@ Current location: Viana do Castelo, Portugal :portugal:
 
 <!-- tpl: contacts_block -->
 
+<!-- tpl: generated_disclaimer -->
+
 ## Experience
 
 ### 2022-2023

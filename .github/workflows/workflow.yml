@@ -16,6 +16,15 @@ jobs:
           vars: |
             email: ${{ vars.CONTACTS_BLOCK_EMAIL }}
             tg_url: ${{ vars.CONTACTS_BLOCK_TG_URL }}
+      - name: Set current date
+        run: echo "HUMANIZED_DATETIME=$(date '+%B %dth, %Y, %H:%m UTC')" >> $GITHUB_ENV
+      - name: Render disclaimer
+        uses: chuhlomin/render-template@v1.6
+        with:
+          template: templates/generated_disclaimer.template.md
+          result_path: rendered/generated_disclaimer.md
+          vars: |
+            datetime: ${{ env.HUMANIZED_DATETIME }}
       - name: Render CV.md
         run: ./scripts/insert_templates.py README.md CV.md
       - name: Render CV.pdf
