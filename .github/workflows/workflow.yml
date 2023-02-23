@@ -8,9 +8,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: khvn26/markdown-to-pdf@v1.3.0
+      - name: Render contacts block
+        uses: chuhlomin/render-template@v1.6
         with:
-          input_dir: /
+          template: templates/contacts_block.template.md
+          result_path: rendered/contacts_block.md
+          vars: |
+            email: ${{ vars.CONTACTS_BLOCK_EMAIL }}
+            tg_url: ${{ vars.CONTACTS_BLOCK_TG_URL }}
+      - name: Render CV.md
+        run: ./scripts/insert_templates.py README.md CV.md
+      - name: Render CV.pdf
+        uses: khvn26/markdown-to-pdf@v1.3.0
+        with:
+          input_path: CV.md
           output_dir: pdfs
           theme: styles/custom.css
           build_html: false
@@ -37,6 +48,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./pdfs/README.pdf
+          asset_path: ./pdfs/CV.pdf
           asset_name: CV.pdf
           asset_content_type: application/pdf
