@@ -1,6 +1,10 @@
 name: main
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 
 jobs:
   publish-pdf:
@@ -12,7 +16,7 @@ jobs:
         uses: chuhlomin/render-template@v1.6
         with:
           template: templates/contacts_block.template.md
-          result_path: rendered/contacts_block.md
+          result_path: templates/rendered/contacts_block.md
           vars: |
             email: ${{ vars.CONTACTS_BLOCK_EMAIL }}
             tg_url: ${{ vars.CONTACTS_BLOCK_TG_URL }}
@@ -22,18 +26,19 @@ jobs:
         uses: chuhlomin/render-template@v1.6
         with:
           template: templates/generated_disclaimer.template.md
-          result_path: rendered/generated_disclaimer.md
+          result_path: templates/rendered/generated_disclaimer.md
           vars: |
             datetime: ${{ env.HUMANIZED_DATETIME }}
       - name: Render CV.md
-        run: ./scripts/insert_templates.py README.md CV.md
+        run: ./scripts/insert_templates.py README.md rendered/CV.md
       - name: Render CV.pdf
         uses: khvn26/markdown-to-pdf@v1.3.0
         with:
-          input_path: CV.md
-          output_dir: pdfs
+          input_path: rendered/CV.md
+          output_dir: pdfs/
           theme: styles/custom.css
           build_html: false
+      - run: ls rendered
       - uses: actions/upload-artifact@v3
         with:
           name: pdfs

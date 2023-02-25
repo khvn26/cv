@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
-import sys
 import re
+import sys
 from pathlib import Path
-from typing import Dict, Iterator, List, Optional
+from typing import Iterator, Optional
 
 PLACEHOLDER_LINE_REGEX = re.compile(r"<!-- tpl: ([a-zA-Z_]+) -->\n")
+RENDERED_TEMPLATES_BASE_PATH = Path(".") / "templates" / "rendered"
 
 
-def get_rendered_templates() -> Dict[str, List[str]]:
-    result = {}
-    rendered_dir = Path(".") / "rendered"
-    for file_path in rendered_dir.glob("*.md"):
-        result[file_path.stem] = open(file_path).readlines()
-    return result
+def iter_rendered_template_lines(template_name: str) -> Iterator[str]:
+    template_path = RENDERED_TEMPLATES_BASE_PATH / f"{template_name}.md"
+    with open(template_path, "r") as lines:
+        yield from lines
 
 
 def get_template_name_from_line(line: str) -> Optional[str]:
@@ -20,32 +19,24 @@ def get_template_name_from_line(line: str) -> Optional[str]:
         return match.group(1)
 
 
-def _iter_lines(
+def iter_output_lines(
     input_file_path: str,
-    rendered_templates: Dict[str, List[str]],
 ) -> Iterator[str]:
     with open(input_file_path, "r") as input_file:
         for line in input_file:
             template_name = get_template_name_from_line(line)
             if template_name:
-                rendered_lines = rendered_templates.get(template_name)
-                if rendered_lines:
-                    yield from rendered_lines
-                    continue
-            yield line
+                yield from iter_rendered_template_lines(template_name)
+            else:
+                yield line
 
 
 def main():
     assert len(sys.argv) == 3
     _, input_file_path, output_file_path = sys.argv
-    rendered_templates = get_rendered_templates()
     with open(output_file_path, "w") as output_file:
-        output_file.writelines(
-            _iter_lines(
-                input_file_path=input_file_path,
-                rendered_templates=rendered_templates,
-            )
-        )
+        for line in iter_output_lines(input_file_path):
+            output_file.write(line)
 
 
 if __name__ == "__main__":
