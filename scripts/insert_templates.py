@@ -9,7 +9,7 @@ RENDERED_TEMPLATES_BASE_PATH = Path(".") / "templates" / "rendered"
 
 
 def iter_rendered_template_lines(template_name: str) -> Iterator[str]:
-    template_path = RENDERED_TEMPLATES_BASE_PATH / template_name
+    template_path = RENDERED_TEMPLATES_BASE_PATH / f"{template_name}.md"
     with open(template_path, "r") as lines:
         yield from lines
 
