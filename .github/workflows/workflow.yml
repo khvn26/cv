@@ -1,6 +1,10 @@
 name: main
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 
 jobs:
   publish-pdf:
@@ -12,7 +16,7 @@ jobs:
         uses: chuhlomin/render-template@v1.6
         with:
           template: templates/contacts_block.template.md
-          result_path: rendered/contacts_block.md
+          result_path: templates/rendered/contacts_block.md
           vars: |
             email: ${{ vars.CONTACTS_BLOCK_EMAIL }}
             tg_url: ${{ vars.CONTACTS_BLOCK_TG_URL }}
@@ -22,22 +26,23 @@ jobs:
         uses: chuhlomin/render-template@v1.6
         with:
           template: templates/generated_disclaimer.template.md
-          result_path: rendered/generated_disclaimer.md
+          result_path: templates/rendered/generated_disclaimer.md
           vars: |
             datetime: ${{ env.HUMANIZED_DATETIME }}
       - name: Render CV.md
-        run: ./scripts/insert_templates.py README.md CV.md
+        run: ./scripts/insert_templates.py README.md rendered/CV.md
       - name: Render CV.pdf
         uses: khvn26/markdown-to-pdf@v1.3.0
         with:
-          input_path: CV.md
-          output_dir: pdfs
+          input_path: rendered/CV.md
+          output_dir: rendered
           theme: styles/custom.css
           build_html: false
+      - run: ls rendered
       - uses: actions/upload-artifact@v3
         with:
-          name: pdfs
-          path: pdfs/*
+          name: rendered
+          path: rendered/*
       - if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
         name: Create Release
         id: create_release
@@ -57,6 +62,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./pdfs/CV.pdf
+          asset_path: ./rendered/CV.pdf
           asset_name: CV.pdf
           asset_content_type: application/pdf
